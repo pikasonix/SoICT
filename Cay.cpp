@@ -37,7 +37,6 @@ Node* addLast(Node* p, int u) {
 }
 
 void Insert(int u, int v) {
-    if (find(root, u) != NULL) return;
     Node* r = find(root, v);
     if (r == NULL) return;
     r->leftMostChild = addLast(r->leftMostChild, u);
@@ -51,20 +50,11 @@ void PreOrder(Node* p) {
 }
 
 void InOrder(Node* p) {
-    if (p == NULL){
-        Node*p=p->leftMostChild;
-        InOrder(p);
-        printf("%d ",p->id);
-    }
-    else {
-        Node*p = p->rightSibling;
-        while (p!=NULL){
-            InOrder(p);
-            p->rightSibling;
-        }
-    }
+    if (p == NULL) return;
+    InOrder(p->leftMostChild);
+    printf("%d ", p->id);
+    InOrder(p->rightSibling);
 }
-
 
 void PostOrder(Node* p) {
     if (p == NULL) return;
