@@ -4,90 +4,74 @@
 
 typedef struct Node {
     int id;
-    struct Node* leftMostChild;
-    struct Node* rightSibling;
+    struct Node* leftChild;
+    struct Node* rightChild;
 } Node;
-
 Node* root;
 
-Node* makeNode(int u) {
-    Node* p = (Node*)malloc(sizeof(Node));
-    p->id = u;
-    p->leftMostChild = NULL;
-    p->rightSibling = NULL;
-    return p;
-}
+#define MAX_HEAP_SIZE 1024
 
 Node* find(Node* r, int u) {
     if (r == NULL) return NULL;
     if (r->id == u) return r;
-    Node* p = r->leftMostChild;
-    while (p != NULL) {
-        Node* q = find(p, u);
-        if (q != NULL) return q;
-        p = p->rightSibling;
-    }
-    return NULL;
+    Node* p = find(r->leftChild, u);
+    if (p!=NULL) return p;
+    return find(r->rightChild, u);
 }
 
-Node* addLast(Node* p, int u) {
-    if (p == NULL) return makeNode(u);
-    p->rightSibling = addLast(p->rightSibling, u);
+Node* makeNode(int u) {
+    Node* p = (Node*)malloc(sizeof(Node));
+    p->id = u;
+    p->leftChild = NULL;
+    p->rightChild = NULL;
     return p;
 }
 
-void Insert(int u, int v) {
-    if (find(root, u) != NULL) return;
+void AddLeftChild(int u, int v) {
     Node* r = find(root, v);
     if (r == NULL) return;
-    r->leftMostChild = addLast(r->leftMostChild, u);
+    if (r->leftChild==NULL) r->leftChild = makeNode(u);
 }
 
-void PreOrder(Node* p) {
+void AddRightChild(int u, int v) {
+    Node* r = find(root, v);
+    if (r == NULL) return;
+    if (r->rightChild==NULL) r->rightChild = makeNode(u);
+}
+int check=1;
+void IsMaxHeap(Node* p) {
     if (p == NULL) return;
-    printf("%d ", p->id);
-    PreOrder(p->leftMostChild);
-    PreOrder(p->rightSibling);
+    if (p->leftChild != NULL)
+        if (p->id < p->leftChild->id)  check=0;
+    if (p->rightChild != NULL)
+        if (p->id < p->rightChild->id) check=0;
+    IsMaxHeap(p->leftChild);
+    IsMaxHeap(p->rightChild);
 }
-
-void InOrder(Node* p) {
-    if (p == NULL){
-        Node*p=p->leftMostChild;
-        InOrder(p);
-        printf("%d ",p->id);
-    }
-    else {
-        Node*p = p->rightSibling;
-        while (p!=NULL){
-            InOrder(p);
-            p->rightSibling;
-        }
-    }
-}
-
-
-void PostOrder(Node* p) {
-    if (p == NULL) return;
-    PostOrder(p->leftMostChild);
-    PostOrder(p->rightSibling);
-    printf("%d ", p->id);
-}
-
 
 int main() {
     int u, v;
     while (1) {
         char cmd[256];
         scanf("%s", cmd);
-        if (strcmp(cmd, "*") == 0) break;
+        if (strcmp(cmd, "Quit") == 0) break;
         else if (strcmp(cmd, "MakeRoot") == 0) {
-            scanf("%d", &u);                    root = makeNode(u);
+            scanf("%d", &u);                    
+            root = makeNode(u);
         } 
-        else if (strcmp(cmd, "Insert") == 0) {
-            scanf("%d %d", &u, &v);             Insert(u, v);
+        else if (strcmp(cmd, "AddLeftChild") == 0) {
+            scanf("%d %d", &v, &u);             
+            AddLeftChild(u, v);
         } 
-        else if (strcmp(cmd, "InOrder") == 0)   InOrder(root);
-        else if (strcmp(cmd, "PreOrder") == 0)  PreOrder(root);
-        else if (strcmp(cmd, "PostOrder") == 0) PostOrder(root);
+        else if (strcmp(cmd, "AddRightChild") == 0) {
+            scanf("%d %d", &v, &u);     
+            AddRightChild(u, v);
+        }  
+        else if (strcmp(cmd, "IsMaxHeap") == 0) {
+            scanf("%d", &u); 
+            IsMaxHeap(find(root,u));
+            printf("%d\n",check);
+            check=1;
+        }
     }
 }
