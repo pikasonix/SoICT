@@ -1,4 +1,6 @@
 #include<stdio.h>
+#include<time.h>
+int a[1000000];
 void quickSort(int a[],int l, int r){
     int i=l, j=r;
     int x=a[(l+r)/2];
@@ -16,10 +18,14 @@ void quickSort(int a[],int l, int r){
     if (i<r) quickSort(a,i,r);
 }
 int main(){
+    FILE *f = fopen("input.txt","r");
     int n;
-    int a[1000000];
-    scanf("%d",&n);
-    for (int i=0;i<n;i++) scanf("%d",&a[i]);
+    fscanf(f,"%d",&n);
+    for (int i=0;i<n;i++) fscanf(f,"%d",&a[i]);
+    clock_t begin = clock();
     quickSort(a,0,n-1);
-    for (int i=0;i<n;i++) printf("%d ",a[i]);
+
+    clock_t end = clock();
+    printf("\nTime run: %f",(float)(end-begin)/CLOCKS_PER_SEC);
+    fclose(f);
 }
