@@ -8,4 +8,6 @@ int main() {
     fprintf(fp, "%d\n", MAX);
     for (int i = 0; i < MAX; i++)   fprintf(fp, "%d\n", numbers[i]);
     fclose(fp);
+    Linh.LN236038@sis.hust.edu.vn
+    Bim0562055
 }

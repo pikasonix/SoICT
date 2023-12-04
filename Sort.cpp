@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<time.h>
-int a[100000000], a1[100000000];
+int a[1000000], a1[1000000];
 // quickSort
 void quickSort(int a[],int l, int r){
     int i=l, j=r;
