@@ -1,64 +1,71 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<string.h>
+
 int hash(char* s,int m){
     int rs=0; int k=strlen(s);
     for(int i=0;i<k;i++) rs=(rs*255+s[i])%m;
     return rs;
 }
 
-void quickSort(int a[],int l, int r){
-    int i=l, j=r;
-    int x=a[(l+r)/2];
-    while (i<=j){
-        while (a[i]<x) i++;
-        while (a[j]>x) j--;
-        if (i<=j){
-            int temp=a[i];
-            a[i]=a[j];
-            a[j]=temp;
-            i++; j--;
-        }
-    }
-    if (l<j) quickSort(a,l,j);
-    if (i<r) quickSort(a,i,r);
+typedef struct Node{
+    int data;
+    struct Node *leftChild;
+    struct Node *rightChild;
+} Node;
+
+Node *root;
+
+Node *makeNode(int data){
+    Node *p = (Node *)malloc(sizeof(Node));
+    p->data = data;
+    p->leftChild = NULL;
+    p->rightChild = NULL;
+    return p;
 }
 
-int binarySearch(int a[], int l, int r, int x){
-	if (r>=l){
-		int mid = l+(r-l)/2;
-		if (a[mid] == x)
-			return mid;
-		if (a[mid] > x)
-			return binarySearch(a,l,mid-1,x);
-		return binarySearch(a,mid+1,r,x);
-	}
-	return -1;
+Node *insert(Node *r, int data){
+    if (r == NULL) return makeNode(data);
+    if (r->data < data){
+        r->rightChild = insert(r->rightChild, data);
+        return r;
+    }
+    else if (r->data == data) return r;
+    else{
+        r->leftChild = insert(r->leftChild, data);
+        return r;
+    }
+}
+
+Node *find(Node *r, int data){
+    if (r == NULL) return NULL;
+    if (r->data == data) return r;
+    if (r->data < data)  return find(r->rightChild, data);
+    return find(r->leftChild, data);
 }
 
 int main(){
     char s[51];
-    int mod = 100000;
-    int a[100000];
+    int mod = 1000000007;
     int i;
     for(i=0;;i++){
         scanf("%s",s);
-        if(strcmp(s,"*")==0) break;
-        a[i]=hash(s,mod);
+        if(strcmp(s,"*")==0) break;    
+        root = insert(root,hash(s,mod));
     }
-    int n=i;
-    quickSort(a,0,n-1);
     for(i=0;;i++){
         scanf("%s",s);
+        char s1[51];
         if(strcmp(s,"***")==0) break;
         if (strcmp(s,"find")==0){
-            scanf("%s",s);
-            if(binarySearch(a,0,n-1,hash(s,mod))==-1) printf("1\n");
-                else printf("0\n");
+            scanf("%s",s1);
+            if(find(root,hash(s1,mod))==NULL) printf("0\n");
+                else printf("1\n");
         }
         else if (strcmp(s,"insert")==0){
-            scanf("%s",s);
-            if(binarySearch(a,0,n-1,hash(s,mod))==-1) printf("0\n");
-                else {printf("1\n"); a[n]=hash(s,mod); n++; quickSort(a,0,n-1);}
+            scanf("%s",s1);
+            if(find(root,hash(s1,mod))==NULL) {printf("1\n"); root = insert(root,hash(s1,mod));}
+                else printf("0\n");
         }
     }
 }
